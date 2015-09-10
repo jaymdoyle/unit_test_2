@@ -1,0 +1,7 @@
+si 1
+device STM32F746NG
+erase
+loadbin out.bin, 0x08000000
+r
+Sleep 1000
+g
