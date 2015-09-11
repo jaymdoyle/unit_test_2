@@ -29,7 +29,6 @@
 
 #include <rtems/shell.h>
 #include <fcntl.h>
-//#include <testmacros.h>
 #include <bsp.h>
 #include <stm32f-processor-specific.h>
 #include <hal-utils.h>
@@ -38,35 +37,19 @@
 
 extern "C"
 {
+  const int argc = 2;
+  const char program_name[16]   = "unittest";
+  const char verbose_option[16] = "-v";
+  const char* argv[argc] = {(char*) program_name, (char*) verbose_option};
 
-const int argc = 2;
-const char program_name[16]   = "unittest";
-const char verbose_option[16] = "-v";
-const char* argv[argc] = {(char*) program_name, (char*) verbose_option};
+  //=======================LED TAKS================================================
+  rtems_task Test_test_task(
+    rtems_task_argument task_index
+  )
+  {
+    (void) rtems_task_wake_after( 1);
+    CommandLineTestRunner::RunAllTests(argc, (char**)argv);
 
-//=======================LED TAKS================================================
-rtems_task Test_test_task(
-  rtems_task_argument task_index
-)
-{
-  int i;
-  char szTest[32];
-
-  int test = open("/dev/ttyS3", O_WRONLY | O_APPEND);
-
-  for(i = 0; i < 10; i++){
-    snprintf(szTest, COUNTOF(szTest)-1, "Hello world %d\n\r", i+1);
-    while(write(test, (char*) szTest, strlen(szTest)) == 0){
-      //Do nothing
-    }
-    //(void) rtems_task_wake_after( 10);
+    (void) rtems_task_delete( RTEMS_SELF );
   }
-
-  (void) rtems_task_wake_after( 1);
-  CommandLineTestRunner::RunAllTests(argc, (char**)argv);
-
-  (void) rtems_task_delete( RTEMS_SELF );
-
-}
-
 }

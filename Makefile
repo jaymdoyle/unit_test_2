@@ -18,7 +18,7 @@ TEST_DIR  = /other/rtems/sources/rtems/c/src/lib/libbsp/arm/shared/stm32fxxxx/te
 
 # C source names
 CSRCS   = app_main.c
-CXXSRCS = tester_task.cpp \
+CXXSRC_CPPUNIT = tester_task.cpp \
 $(CPPUNIT_SRC)/CommandLineTestRunner.cpp \
 $(CPPUNIT_SRC)/CommandLineArguments.cpp \
 $(CPPUNIT_SRC)/JUnitTestOutput.cpp \
@@ -37,18 +37,23 @@ $(CPPUNIT_SRC)/TestResult.cpp \
 $(CPPUNIT_SRC)/Utest.cpp \
 $(CPPUNIT_SRC)/UtestPlatform.cpp 
 
-TEST_SRC = $(TEST_DIR)/uart/uart_test.cpp \
-           $(TEST_DIR)/sdram/sdram_fit.cpp 
+CXXSRC_TEST = $(TEST_DIR)/uart/uart_test.cpp \
+              $(TEST_DIR)/sdram/sdram_fit.cpp 
                  
-COBJS   = $(CSRCS:%.c=${ARCH}/%.o) 
-CXXOBJS = $(CXXSRCS:%.cpp=${ARCH}/%.o) 
+CXXSRC_TEST_FILENAMES  = $(notdir $(CXXSRC_TEST))
+ 
+COBJS                  = $(CSRCS:%.c=${ARCH}/%.o) 
+CXXOBJS_CPPUNIT        = $(CXXSRC_CPPUNIT:%.cpp=${ARCH}/%.o) 
+CXXOBJS_TEST           = $(CXXSRC_TEST_FILENAMES:%.cpp=${ARCH}/%.o)
 
-TESTFILENAMES = $(notdir $(TEST_SRC))
-TESTOBJS      = $(TESTFILENAMES:%.cpp=${ARCH}/%.o) 
+CXXOBJS = $(CXXOBJS_CPPUNIT) $(CXXOBJS_TEST)
+CXXSRCS = $(CXXSRC_CPPUNIT) $(CXXSRC_TEST)
 
 include $(RTEMS_MAKEFILE_PATH)/Makefile.inc
 include $(RTEMS_CUSTOM)
 include $(PROJECT_ROOT)/make/leaf.cfg
+
+CXXOBJS_TEST: $(CXXSRC_TEST)
 
 COMMON_FLAGS += -I$(RTEMS_BSP_INCLUDE_PATH)
 COMMON_FLAGS += -I. 
@@ -57,7 +62,9 @@ COMMON_FLAGS += -I$(CPPUNIT_INCLUDE)
 COMMON_FLAGS += -I/other/rtems/sources/rtems/c/src/lib/libbsp/arm/shared/stm32fxxxx/uart
 COMMON_FLAGS += -I/other/rtems/sources/rtems/c/src/lib/libbsp/arm/stm32f7x/uart
 
-COMMON_FLAGS += -D$(RTEMS_TARGET_PROCESSOR) -DTARGET_STM_PROCESSOR_PREFIX=$(TARGET_STM_PROCESSOR_PREFIX) -DTARGET_STM_PROCESSOR=$(TARGET_STM_PROCESSOR)
+COMMON_FLAGS += -D$(RTEMS_TARGET_PROCESSOR) \
+                -DTARGET_STM_PROCESSOR_PREFIX=$(TARGET_STM_PROCESSOR_PREFIX) \
+                -DTARGET_STM_PROCESSOR=$(TARGET_STM_PROCESSOR)
 COMMON_FLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
 AM_LDFLAGS   += -L/other/firmware/cpputest/cpputest_build/lib 
 LINK_LIBS    += -lstdc++ -lm -Wl,-Map=${ARCH}/unit_test.map 
@@ -69,9 +76,15 @@ $(CPPOUTDIR):
 	mkdir ${ARCH}/src
 	mkdir ${ARCH}/$(CPPUNIT_SRC)
 
-OBJS = $(COBJS) $(CXXOBJS) $(ASOBJS) $(TESTOBJS)
+OBJS = $(COBJS) $(CXXOBJS)  $(ASOBJS) 
 
 all:    ${ARCH} $(CPPOUTDIR) $(PGM) $(PGM_BIN)
+
+${ARCH}/%.o: $(TEST_DIR)/uart/%.cpp
+	${COMPILE.cc} $(AM_CPPFLAGS) $(AM_CXXFLAGS) -o $@ $<
+	
+${ARCH}/%.o: $(TEST_DIR)/sdram/%.cpp
+	${COMPILE.cc} $(AM_CPPFLAGS) $(AM_CXXFLAGS) -o $@ $<
 
 $(PGM): $(OBJS)
 	$(make-exe)
