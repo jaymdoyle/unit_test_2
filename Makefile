@@ -17,7 +17,7 @@ CPPOUTDIR = ${ARCH}/$(CPPUNIT_SRC)
 TEST_DIR  = /other/rtems/sources/rtems/c/src/lib/libbsp/arm/shared/stm32fxxxx/test
 
 # C source names
-CSRCS   = app_main.c
+CSRCS   = app_main.c uart_echo.c
 CXXSRC_CPPUNIT = tester_task.cpp \
 $(CPPUNIT_SRC)/CommandLineTestRunner.cpp \
 $(CPPUNIT_SRC)/CommandLineArguments.cpp \
@@ -37,8 +37,12 @@ $(CPPUNIT_SRC)/TestResult.cpp \
 $(CPPUNIT_SRC)/Utest.cpp \
 $(CPPUNIT_SRC)/UtestPlatform.cpp 
 
-CXXSRC_TEST = $(TEST_DIR)/uart/uart_test.cpp \
-              $(TEST_DIR)/sdram/sdram_fit.cpp 
+CXXSRC_TEST = $(TEST_DIR)/uart/uart_unit.cpp \
+              $(TEST_DIR)/uart/uart_fit.cpp  \
+              $(TEST_DIR)/sdram/sdram_fit.cpp \
+              $(TEST_DIR)/sdram/sdram_unit.cpp \
+#              $(TEST_DIR)/can/can_fit.cpp     \
+
                  
 CXXSRC_TEST_FILENAMES  = $(notdir $(CXXSRC_TEST))
  
@@ -65,9 +69,11 @@ COMMON_FLAGS += -I/other/rtems/sources/rtems/c/src/lib/libbsp/arm/stm32f7x/uart
 COMMON_FLAGS += -D$(RTEMS_TARGET_PROCESSOR) \
                 -DTARGET_STM_PROCESSOR_PREFIX=$(TARGET_STM_PROCESSOR_PREFIX) \
                 -DTARGET_STM_PROCESSOR=$(TARGET_STM_PROCESSOR)
+#COMMON_FLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16 -fprofile-arcs -ftest-coverage
 COMMON_FLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
 AM_LDFLAGS   += -L/other/firmware/cpputest/cpputest_build/lib 
 LINK_LIBS    += -lstdc++ -lm -Wl,-Map=${ARCH}/unit_test.map 
+#LINK_LIBS    += -lstdc++ -lm -Wl,-Map=${ARCH}/unit_test.map -fprofile-arcs
 
 CFLAGS   += $(COMMON_FLAGS)
 CPPFLAGS += $(COMMON_FLAGS) -DCPPUTEST_OUTPUT_DEVICE=\"/dev/ttyS3\"
@@ -84,6 +90,9 @@ ${ARCH}/%.o: $(TEST_DIR)/uart/%.cpp
 	${COMPILE.cc} $(AM_CPPFLAGS) $(AM_CXXFLAGS) -o $@ $<
 	
 ${ARCH}/%.o: $(TEST_DIR)/sdram/%.cpp
+	${COMPILE.cc} $(AM_CPPFLAGS) $(AM_CXXFLAGS) -o $@ $<
+	
+${ARCH}/%.o: $(TEST_DIR)/can/%.cpp
 	${COMPILE.cc} $(AM_CPPFLAGS) $(AM_CXXFLAGS) -o $@ $<
 
 $(PGM): $(OBJS)

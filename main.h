@@ -42,10 +42,8 @@
 /* Includes ------------------------------------------------------------------*/
 #ifdef STM32F746xx
 #include "stm32f7xx_hal.h"
-#include "stm32746g_discovery.h"
 #elif STM32F407xx
 #include "stm32f4xx_hal.h"
-#include "stm32f4_discovery.h"
 #endif
 
 

@@ -127,7 +127,7 @@ bool TestFailure::isInHelperFunction() const
 
 SimpleString TestFailure::createButWasString(const SimpleString& expected, const SimpleString& actual)
 {
-    return StringFromFormat("expected <%s>\n\tbut was  <%s>", expected.asCharString(), actual.asCharString());
+    return StringFromFormat("expected <%s>\n\r\tbut was  <%s>", expected.asCharString(), actual.asCharString());
 }
 
 SimpleString TestFailure::createDifferenceAtPosString(const SimpleString& actual, size_t position, DifferenceFormat format)
@@ -141,8 +141,8 @@ SimpleString TestFailure::createDifferenceAtPosString(const SimpleString& actual
     SimpleString actualString = paddingForPreventingOutOfBounds + actual + paddingForPreventingOutOfBounds;
     SimpleString differentString = StringFromFormat("difference starts at position %lu at: <", (unsigned long) position);
 
-    result += "\n";
-    result += StringFromFormat("\t%s%s>\n", differentString.asCharString(), actualString.subString(actualOffset, extraCharactersWindow).asCharString());
+    result += "\n\r";
+    result += StringFromFormat("\t%s%s>\n\r", differentString.asCharString(), actualString.subString(actualOffset, extraCharactersWindow).asCharString());
 
     SimpleString markString = actualString.subString(actualOffset, halfOfExtraCharactersWindow+1);
     markString = removeAllPrintableCharactersFrom(markString);
@@ -159,7 +159,7 @@ SimpleString TestFailure::createUserText(const SimpleString& text)
     {
         userMessage += "Message: ";
         userMessage += text;
-        userMessage += "\n\t";
+        userMessage += "\n\r\t";
     }
     return userMessage;
 }
@@ -191,7 +191,7 @@ DoublesEqualFailure::DoublesEqualFailure(UtestShell* test, const char* fileName,
     message_ += ">";
 
     if (PlatformSpecificIsNan(expected) || PlatformSpecificIsNan(actual) || PlatformSpecificIsNan(threshold))
-        message_ += "\n\tCannot make comparisons with Nan";
+        message_ += "\n\r\tCannot make comparisons with Nan";
 }
 
 CheckEqualFailure::CheckEqualFailure(UtestShell* test, const char* fileName, int lineNumber, const SimpleString& expected, const SimpleString& actual, const SimpleString& text)
@@ -212,7 +212,7 @@ ContainsFailure::ContainsFailure(UtestShell* test, const char* fileName, int lin
 {
     message_ = createUserText(text);
 
-    message_ += StringFromFormat("actual <%s>\n\tdid not contain  <%s>", actual.asCharString(), expected.asCharString());
+    message_ += StringFromFormat("actual <%s>\n\r\tdid not contain  <%s>", actual.asCharString(), expected.asCharString());
 }
 
 CheckFailure::CheckFailure(UtestShell* test, const char* fileName, int lineNumber, const SimpleString& checkString, const SimpleString& conditionString, const SimpleString& text)

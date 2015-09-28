@@ -47,7 +47,7 @@ extern "C"
     rtems_task_argument task_index
   )
   {
-    (void) rtems_task_wake_after( 1);
+    (void) rtems_task_wake_after( 100);
     CommandLineTestRunner::RunAllTests(argc, (char**)argv);
 
     (void) rtems_task_delete( RTEMS_SELF );
