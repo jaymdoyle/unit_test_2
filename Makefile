@@ -17,7 +17,7 @@ CPPOUTDIR = ${ARCH}/$(CPPUNIT_SRC)
 TEST_DIR  = /other/rtems/sources/rtems/c/src/lib/libbsp/arm/shared/stm32fxxxx/test
 
 # C source names
-CSRCS   = app_main.c uart_echo.c
+CSRCS   = app_main.c  
 CXXSRC_CPPUNIT = tester_task.cpp \
 $(CPPUNIT_SRC)/CommandLineTestRunner.cpp \
 $(CPPUNIT_SRC)/CommandLineArguments.cpp \
@@ -41,7 +41,10 @@ CXXSRC_TEST = $(TEST_DIR)/uart/uart_unit.cpp \
               $(TEST_DIR)/uart/uart_fit.cpp  \
               $(TEST_DIR)/sdram/sdram_fit.cpp \
               $(TEST_DIR)/sdram/sdram_unit.cpp \
-#              $(TEST_DIR)/can/can_fit.cpp     \
+              $(TEST_DIR)/cmsis/cmsis_unit.cpp \
+              $(TEST_DIR)/can/can_fit.cpp      \
+              $(TEST_DIR)/ethernet/ethernet_fit.cpp 
+
 
                  
 CXXSRC_TEST_FILENAMES  = $(notdir $(CXXSRC_TEST))
@@ -65,14 +68,18 @@ COMMON_FLAGS += -DCPPUNIT
 COMMON_FLAGS += -I$(CPPUNIT_INCLUDE)
 COMMON_FLAGS += -I/other/rtems/sources/rtems/c/src/lib/libbsp/arm/shared/stm32fxxxx/uart
 COMMON_FLAGS += -I/other/rtems/sources/rtems/c/src/lib/libbsp/arm/stm32f7x/uart
+COMMON_FLAGS += -I/other/rtems/bsps/arm-rtems4.11/stm32f7x/lwip/include
+COMMON_FLAGS += -I/other/rtems/sources/rtems/c/src/lib/libbsp/arm/shared/stm32fxxxx/test/include
 
 COMMON_FLAGS += -D$(RTEMS_TARGET_PROCESSOR) \
                 -DTARGET_STM_PROCESSOR_PREFIX=$(TARGET_STM_PROCESSOR_PREFIX) \
                 -DTARGET_STM_PROCESSOR=$(TARGET_STM_PROCESSOR)
-#COMMON_FLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16 -fprofile-arcs -ftest-coverage
+
 COMMON_FLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
 AM_LDFLAGS   += -L/other/firmware/cpputest/cpputest_build/lib 
-LINK_LIBS    += -lstdc++ -lm -Wl,-Map=${ARCH}/unit_test.map 
+LINK_LIBS    += -L /other/rtems/bsps/arm-rtems4.11/stm32f7x/lwip/lib  -lstdc++ -Wl,-Map=${ARCH}/unit_test.map 
+
+#COMMON_FLAGS += -fprofile-arcs -ftest-coverage
 #LINK_LIBS    += -lstdc++ -lm -Wl,-Map=${ARCH}/unit_test.map -fprofile-arcs
 
 CFLAGS   += $(COMMON_FLAGS)
@@ -93,6 +100,15 @@ ${ARCH}/%.o: $(TEST_DIR)/sdram/%.cpp
 	${COMPILE.cc} $(AM_CPPFLAGS) $(AM_CXXFLAGS) -o $@ $<
 	
 ${ARCH}/%.o: $(TEST_DIR)/can/%.cpp
+	${COMPILE.cc} $(AM_CPPFLAGS) $(AM_CXXFLAGS) -o $@ $<
+	
+${ARCH}/%.o: $(TEST_DIR)/cmsis/%.cpp
+	${COMPILE.cc} $(AM_CPPFLAGS) $(AM_CXXFLAGS) -o $@ $<
+
+${ARCH}/%.o: $(TEST_DIR)/ethernet/%.cpp
+	${COMPILE.cc} $(AM_CPPFLAGS) $(AM_CXXFLAGS) -o $@ $<
+	
+${ARCH}/%.o: $(TEST_DIR)/util/%.cpp
 	${COMPILE.cc} $(AM_CPPFLAGS) $(AM_CXXFLAGS) -o $@ $<
 
 $(PGM): $(OBJS)

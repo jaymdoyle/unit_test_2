@@ -79,32 +79,6 @@ void start_shell(void)
     }
 }
 
-//=======================LED TASK================================================
-rtems_task Test_led_task(
-  rtems_task_argument task_index
-)
-{
-  rtems_interval    ticks;
-  bool bln_LEDState = false;
-
-  ticks = rtems_clock_get_ticks_per_second();
-
-  for ( ; ; ) {
-
-#if 0
-    if(bln_LEDState == false){
-        BSP_LED_On(TEST_LED);
-    } else {
-        BSP_LED_Off(TEST_LED);
-    }
-#endif
-    bln_LEDState = !bln_LEDState;
-
-    (void) rtems_task_wake_after( ticks );
-  }
-}
-
-
 
 rtems_task Init(
   rtems_task_argument argument
@@ -112,29 +86,13 @@ rtems_task Init(
 {
   stm32_initialize_extensions();
 
-  Task_name[ TASK_LED ]     = rtems_build_name( 'T', 'L', 'E', 'D' );
-  (void) rtems_task_create(
-    Task_name[ TASK_LED ], 255, RTEMS_MINIMUM_STACK_SIZE, RTEMS_DEFAULT_MODES,
-    RTEMS_DEFAULT_ATTRIBUTES, &Task_id[ TASK_LED ]
-  );
-  (void) rtems_task_start( Task_id[ TASK_LED ],  Test_led_task,  2 );
-
   Task_name[ TASK_TEST ]    = rtems_build_name( 'U', 'N', 'I', 'T' );
   (void) rtems_task_create(
-    Task_name[ TASK_TEST], 240, RTEMS_MINIMUM_STACK_SIZE * 2, RTEMS_DEFAULT_MODES,
+    Task_name[ TASK_TEST], 100, RTEMS_MINIMUM_STACK_SIZE * 2, RTEMS_DEFAULT_MODES,
     RTEMS_DEFAULT_ATTRIBUTES, &Task_id[ TASK_TEST ]
   );
   (void) rtems_task_start( Task_id[ TASK_TEST ], Test_test_task,  7 );
 
-
-  Task_name[ TASK_ECHO ]    = rtems_build_name( 'E', 'C', 'H', 'O' );
-  (void) rtems_task_create(
-    Task_name[ TASK_ECHO], 250, RTEMS_MINIMUM_STACK_SIZE * 2, RTEMS_DEFAULT_MODES,
-    RTEMS_DEFAULT_ATTRIBUTES, &Task_id[ TASK_ECHO ]
-  );
-  (void) rtems_task_start( Task_id[ TASK_ECHO ], Test_echo_task,  7 );
-
-  printf("Starting shell...\r\n");
   start_shell();
 
   (void) rtems_task_delete( RTEMS_SELF );
