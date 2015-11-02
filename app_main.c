@@ -84,7 +84,12 @@ rtems_task Init(
   rtems_task_argument argument
 )
 {
-  stm32_initialize_extensions();
+
+  stm32_bsp_register_uart();
+  stm32_bsp_register_can();
+  stm32_bsp_register_i2c();
+  stm32_bsp_register_spi();
+  stm32f_initialize_user_extensions();
 
   Task_name[ TASK_TEST ]    = rtems_build_name( 'U', 'N', 'I', 'T' );
   (void) rtems_task_create(

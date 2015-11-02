@@ -32,6 +32,16 @@
 #include <rtems.h>
 
 TestOutput::WorkingEnvironment TestOutput::workingEnvironment_ = TestOutput::detectEnvironment;
+static int OutputFileDesc = -1;
+
+int getOutputFileDesc(void) {
+
+  if(OutputFileDesc < 0 ) {
+    OutputFileDesc = open(CPPUTEST_OUTPUT_DEVICE, O_WRONLY | O_APPEND);
+  }
+
+  return OutputFileDesc;
+}
 
 void TestOutput::setWorkingEnvironment(TestOutput::WorkingEnvironment workEnvironment)
 {

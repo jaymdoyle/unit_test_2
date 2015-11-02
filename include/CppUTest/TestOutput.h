@@ -45,6 +45,8 @@ class UtestShell;
 class TestFailure;
 class TestResult;
 
+int getOutputFileDesc(void);
+
 class TestOutput
 {
 public:
@@ -114,7 +116,7 @@ class ConsoleTestOutput: public TestOutput
 public:
     explicit ConsoleTestOutput()
     {
-       OutputFileDesc = open(CPPUTEST_OUTPUT_DEVICE, O_WRONLY | O_APPEND);
+      OutputFileDesc = getOutputFileDesc();
     }
 
     virtual ~ConsoleTestOutput()

@@ -37,13 +37,14 @@ $(CPPUNIT_SRC)/TestResult.cpp \
 $(CPPUNIT_SRC)/Utest.cpp \
 $(CPPUNIT_SRC)/UtestPlatform.cpp 
 
-CXXSRC_TEST = $(TEST_DIR)/uart/uart_unit.cpp \
-              $(TEST_DIR)/uart/uart_fit.cpp  \
-              $(TEST_DIR)/sdram/sdram_fit.cpp \
-              $(TEST_DIR)/sdram/sdram_unit.cpp \
-              $(TEST_DIR)/cmsis/cmsis_unit.cpp \
-              $(TEST_DIR)/can/can_fit.cpp      \
-              $(TEST_DIR)/ethernet/ethernet_fit.cpp 
+CXXSRC_TEST = $(TEST_DIR)/uart/uart_unit.cpp    \
+              $(TEST_DIR)/uart/uart_fit.cpp     \
+              $(TEST_DIR)/sdram/sdram_fit.cpp   \
+              $(TEST_DIR)/sdram/sdram_unit.cpp  \
+              $(TEST_DIR)/cmsis/cmsis_unit.cpp  \
+              $(TEST_DIR)/can/can_fit.cpp       \
+              $(TEST_DIR)/can/can_unit.cpp      \
+  #           $(TEST_DIR)/ethernet/ethernet_fit.cpp 
 
 
                  
@@ -75,9 +76,9 @@ COMMON_FLAGS += -D$(RTEMS_TARGET_PROCESSOR) \
                 -DTARGET_STM_PROCESSOR_PREFIX=$(TARGET_STM_PROCESSOR_PREFIX) \
                 -DTARGET_STM_PROCESSOR=$(TARGET_STM_PROCESSOR)
 
-COMMON_FLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
+#COMMON_FLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
 AM_LDFLAGS   += -L/other/firmware/cpputest/cpputest_build/lib 
-LINK_LIBS    += -L /other/rtems/bsps/arm-rtems4.11/stm32f7x/lwip/lib  -lstdc++ -Wl,-Map=${ARCH}/unit_test.map 
+LINK_LIBS    += -L /other/rtems/bsps/arm-rtems4.11/stm32f7x/lwip/lib  -lstdc++ -llwip -Wl,-Map=${ARCH}/unit_test.map 
 
 #COMMON_FLAGS += -fprofile-arcs -ftest-coverage
 #LINK_LIBS    += -lstdc++ -lm -Wl,-Map=${ARCH}/unit_test.map -fprofile-arcs
