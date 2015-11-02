@@ -8,6 +8,4 @@ delete breakpoints
 mon clrbp
 mon halt
 mon reset
-break exit
-break _Terminate
 continue
