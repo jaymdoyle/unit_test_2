@@ -12,12 +12,13 @@
 #include <rtems/rtems/status.h>
 #include <rtems/score/isr.h>
 #include <rtems/rtems/intr.h>
+#include <bspopts.h>
 #include <irq-generic.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <main.h>
 
-#ifdef STM32F746xx
+#if STM32F746xx
 #include <stm32f7xx_hal_conf.h>
 #include <stm32f7xx_hal.h>
 #include <stm32f746xx.h>
@@ -27,6 +28,8 @@
 #include <stm32f4xx_hal.h>
 #include <stm32f407xx.h>
 #define TEST_LED LED3
+else
+#error "Unknown processor type!"
 #endif
 
 #include <rtems/shell.h>
@@ -89,7 +92,7 @@ rtems_task Init(
   stm32_bsp_register_can();
   stm32_bsp_register_i2c();
   stm32_bsp_register_spi();
-  stm32f_initialize_user_extensions();
+  stm32_initialize_extensions();
 
   Task_name[ TASK_TEST ]    = rtems_build_name( 'U', 'N', 'I', 'T' );
   (void) rtems_task_create(
@@ -98,7 +101,7 @@ rtems_task Init(
   );
   (void) rtems_task_start( Task_id[ TASK_TEST ], Test_test_task,  7 );
 
-  start_shell();
+  //start_shell();
 
   (void) rtems_task_delete( RTEMS_SELF );
 }

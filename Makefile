@@ -41,13 +41,11 @@ CXXSRC_TEST = $(TEST_DIR)/uart/uart_unit.cpp    \
               $(TEST_DIR)/uart/uart_fit.cpp     \
               $(TEST_DIR)/sdram/sdram_fit.cpp   \
               $(TEST_DIR)/sdram/sdram_unit.cpp  \
-              $(TEST_DIR)/cmsis/cmsis_unit.cpp  \
               $(TEST_DIR)/can/can_fit.cpp       \
               $(TEST_DIR)/can/can_unit.cpp      \
-  #           $(TEST_DIR)/ethernet/ethernet_fit.cpp 
+#             $(TEST_DIR)/cmsis/cmsis_unit.cpp  \
+#             $(TEST_DIR)/ethernet/ethernet_fit.cpp 
 
-
-                 
 CXXSRC_TEST_FILENAMES  = $(notdir $(CXXSRC_TEST))
  
 COBJS                  = $(CSRCS:%.c=${ARCH}/%.o) 
@@ -61,27 +59,22 @@ include $(RTEMS_MAKEFILE_PATH)/Makefile.inc
 include $(RTEMS_CUSTOM)
 include $(PROJECT_ROOT)/make/leaf.cfg
 
+LWIP_INC_PATH=$(PROJECT_ROOT)/arm-rtems4.11/stm32f7x/lwip/include
+STM32F_LWIP_INC_PATH=$(PROJECT_ROOT)/arm-rtems4.11/stm32f7x/stm32f_lwip/include
+
+LWIP_LIB_PATH=$(PROJECT_ROOT)/arm-rtems4.11/stm32f7x/lwip/include
+STM32F_LIB_INC_PATH=$(PROJECT_ROOT)/arm-rtems4.11/stm32f7x/stm32f_lwip/include
+
 CXXOBJS_TEST: $(CXXSRC_TEST)
 
-COMMON_FLAGS += -I$(RTEMS_BSP_INCLUDE_PATH)
-COMMON_FLAGS += -I. 
+COMMON_FLAGS += -I$(RTEMS_BSP_INCLUDE_PATH) -I$(CPPUNIT_INCLUDE) 
+#COMMON_FLAGS +=  -I$(LWIP_INC_PATH) -I$(STM32F_LWIP_INC_PATH) 
+COMMON_FLAGS += -I.
 COMMON_FLAGS += -DCPPUNIT
-COMMON_FLAGS += -I$(CPPUNIT_INCLUDE)
-COMMON_FLAGS += -I/other/rtems/sources/rtems/c/src/lib/libbsp/arm/shared/stm32fxxxx/uart
-COMMON_FLAGS += -I/other/rtems/sources/rtems/c/src/lib/libbsp/arm/stm32f7x/uart
-COMMON_FLAGS += -I/other/rtems/bsps/arm-rtems4.11/stm32f7x/lwip/include
-COMMON_FLAGS += -I/other/rtems/sources/rtems/c/src/lib/libbsp/arm/shared/stm32fxxxx/test/include
 
-COMMON_FLAGS += -D$(RTEMS_TARGET_PROCESSOR) \
-                -DTARGET_STM_PROCESSOR_PREFIX=$(TARGET_STM_PROCESSOR_PREFIX) \
-                -DTARGET_STM_PROCESSOR=$(TARGET_STM_PROCESSOR)
-
-#COMMON_FLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
-AM_LDFLAGS   += -L/other/firmware/cpputest/cpputest_build/lib 
-LINK_LIBS    += -L /other/rtems/bsps/arm-rtems4.11/stm32f7x/lwip/lib  -lstdc++ -llwip -Wl,-Map=${ARCH}/unit_test.map 
-
-#COMMON_FLAGS += -fprofile-arcs -ftest-coverage
-#LINK_LIBS    += -lstdc++ -lm -Wl,-Map=${ARCH}/unit_test.map -fprofile-arcs
+#AM_LDFLAGS   += -L/other/firmware/cpputest/cpputest_build/lib 
+#LINK_LIBS    += -L -lstm32-lwip -llwip  -lstdc++ -Wl,-Map=${ARCH}/unit_test.map 
+LINK_LIBS    += -lstdc++ -Wl,-Map=${ARCH}/unit_test.map 
 
 CFLAGS   += $(COMMON_FLAGS)
 CPPFLAGS += $(COMMON_FLAGS) -DCPPUTEST_OUTPUT_DEVICE=\"/dev/ttyS3\"
