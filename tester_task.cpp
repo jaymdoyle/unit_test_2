@@ -20,7 +20,13 @@ extern "C"
                             (char*) output_option,
                             (char*) output_type};
 
-  //=======================LED TAKS================================================
+  //======================= Test task================================================
+
+  void done_with_testing(void) {
+    rtems_task_delete(RTEMS_SELF);
+  }
+
+
   rtems_task Test_test_task(
     rtems_task_argument task_index
   )
@@ -28,10 +34,8 @@ extern "C"
     // (void) rtems_task_wake_after( 100);
     CommandLineTestRunner::RunAllTests(argc, (char**)argv);
 
-    // a new POSIX should be created to serve any incoming
-    // request and therefore this task is no longer necesary.
-    rtems_task_delete(RTEMS_SELF);
+    // This function is used for gdb breakpoint
+    done_with_testing();
 
-    (void) rtems_task_wake_after( 1000);
   }
 }
