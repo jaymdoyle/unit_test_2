@@ -59,6 +59,7 @@ public:
 
 protected:
 
+    int OutputFileDesc;
     JUnitTestOutputImpl* impl_;
     void resetTestGroupResult();
 

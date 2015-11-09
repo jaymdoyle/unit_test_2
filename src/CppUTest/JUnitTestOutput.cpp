@@ -30,6 +30,22 @@
 #include "CppUTest/TestResult.h"
 #include "CppUTest/TestFailure.h"
 #include "CppUTest/PlatformSpecificFunctions.h"
+#include <string.h>
+#include <rtems.h>
+
+#define XML_TO_COM 1
+
+static int OutputFileDesc = -1;
+
+int getXMLOutputFileDesc(void) {
+
+  if(OutputFileDesc < 0 ) {
+    OutputFileDesc = open(CPPUTEST_OUTPUT_DEVICE, O_WRONLY | O_APPEND);
+  }
+
+  return OutputFileDesc;
+}
+
 
 struct JUnitTestCaseResultNode
 {
@@ -71,6 +87,7 @@ struct JUnitTestOutputImpl
 JUnitTestOutput::JUnitTestOutput() :
     impl_(new JUnitTestOutputImpl)
 {
+  OutputFileDesc = getXMLOutputFileDesc();
 }
 
 JUnitTestOutput::~JUnitTestOutput()
@@ -274,7 +291,14 @@ void JUnitTestOutput::openFileForWrite(const SimpleString& fileName)
 
 void JUnitTestOutput::writeToFile(const SimpleString& buffer)
 {
+#if XML_TO_COM
+  while(write(OutputFileDesc, buffer.asCharString(), strlen(buffer.asCharString())) != 0){
+    (void) rtems_task_wake_after( 1 );
+  }
+
+#else
     PlatformSpecificFPuts(buffer.asCharString(), impl_->file_);
+#endif
 }
 
 void JUnitTestOutput::closeFile()

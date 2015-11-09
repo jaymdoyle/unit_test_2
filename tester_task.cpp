@@ -10,13 +10,13 @@
 
 extern "C"
 {
-  const int argc = 4;
+  const int argc = 3;
   const char program_name[16]   = "unittest";
-  const char verbose_option[16] = "-v";
+//  const char verbose_option[16] = "-v";
   const char output_option[3] = "-o";
-  const char output_type[16] = "normal";
+  const char output_type[16] = "junit";
   const char* argv[argc] = {(char*) program_name,
-                            (char*) verbose_option,
+//                            (char*) verbose_option,
                             (char*) output_option,
                             (char*) output_type};
 
