@@ -8,4 +8,8 @@ delete breakpoints
 mon clrbp
 mon halt
 mon reset
+break done_with_testing
+commands
+quit
+end
 continue
